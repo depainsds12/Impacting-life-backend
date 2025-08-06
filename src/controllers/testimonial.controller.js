@@ -1,0 +1,81 @@
+const Testimonial = require('../models/testimonial.model');
+const { uploadToAzure, deleteFromAzure } = require('../utils/azureBlob');
+
+exports.getTestimonialList = async (req, res) => {
+  try {
+    const items = await Testimonial.find().sort({ _id: -1 });
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.getTestimonial = async (req, res) => {
+  try {
+    const item = await Testimonial.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: 'Not found' });
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.createTestimonial = async (req, res) => {
+  try {
+    let imageUrl = null;
+    if (req.file) {
+      const uniqueFileName = `testimonial-${Date.now()}.jpeg`;
+      imageUrl = await uploadToAzure(req.file.buffer, uniqueFileName);
+    }
+    const item = new Testimonial({
+      ...req.body,
+      image: imageUrl,
+    });
+    await item.save();
+    res.status(201).json(item);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.updateTestimonial = async (req, res) => {
+  try {
+    const existingItem = await Testimonial.findById(req.params.id);
+    if (!existingItem) return res.status(404).json({ message: 'Not found' });
+    let updateData = { ...req.body };
+    if (req.file) {
+      let fileName;
+      if (existingItem.image) {
+        const urlParts = existingItem.image.split("/");
+        fileName = urlParts[urlParts.length - 1];
+      } else {
+        fileName = `testimonial-${Date.now()}.jpeg`;
+      }
+      const imageUrl = await uploadToAzure(req.file.buffer, fileName);
+      updateData.image = imageUrl;
+    }
+    const updatedItem = await Testimonial.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    res.json(updatedItem);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.deleteTestimonial = async (req, res) => {
+  try {
+    const item = await Testimonial.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(404).json({ message: 'Not found' });
+    if (item.image) {
+      const result = await deleteFromAzure(item.image);
+      if (!result.success) {
+        return res.status(200).json({
+          message: 'Item deleted, but failed to delete image from Azure',
+          error: result.message,
+        });
+      }
+    }
+    res.json({ message: 'Deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
