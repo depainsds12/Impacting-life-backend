@@ -8,9 +8,27 @@ const app = express();
 const swaggerUI = require('swagger-ui-express');
 const swaggerSpec = require('./docs/swagger');
 
+const allowedOrigins = [
+    'https://impactinglife.sdssoftltd.co.uk/',
+    'https://impactinglifeuat.sdssoftltd.co.uk/',
+    'http://localhost:3000/',
+    'http://localhost:5173/'
+];
+
 // Middleware
-app.use(cors());
-// app.use(morgan('dev'));
+// app.use(cors());
+app.use(cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true
+  }));
+
 app.use(express.json());
 
 // Connect to MongoDB
