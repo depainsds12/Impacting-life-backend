@@ -8,6 +8,8 @@ const howItWorksRoutes = require('./howItWorks.routes');
 const bannerRoutes = require('./banner.routes');
 const testimonialRoutes = require('./testimonial.routes');
 const ctaRoutes = require('./cta.routes');
+const footerRoutes = require('./footer.routes');
+const businessRoutes = require('./business.route');
 const { swagger } = require('../docs/swagger-comand');
 const router = express.Router();
 
@@ -22,5 +24,7 @@ router.use('/how-it-works', howItWorksRoutes);
 router.use('/banner', bannerRoutes);
 router.use('/testimonials', testimonialRoutes);
 router.use('/cta', ctaRoutes);
+router.use('/footer', footerRoutes);
+router.use('/business', businessRoutes);
 
 module.exports = router;

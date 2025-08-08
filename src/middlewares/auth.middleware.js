@@ -18,19 +18,18 @@ const protect = async (req, res, next) => {
 };
 
 const adminMiddleware = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {
-    next();
-  } else {
-    res.status(403).json({ message: 'Admin access denied' });
+  console.log("req.user",req.user)
+  if (req.user?.role === 'admin') {
+    return next();
   }
+  return res.status(403).json({ message: 'Admin access denied' });
 };
 
 const userMiddleware = (req, res, next) => {
-  if (req.user && req.user.role === 'user') {
-    next();
-  } else {
-    res.status(403).json({ message: 'User access denied' });
+  if (req.user?.role === 'user') {
+    return next();
   }
+  return res.status(403).json({ message: 'User access denied' });
 };
 
 module.exports = { protect, adminMiddleware, userMiddleware };
