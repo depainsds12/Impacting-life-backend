@@ -28,8 +28,5 @@ jobs:
       run: |
         echo "${{ secrets.ENV_FILE }}" > .env
 
-    - name: Build project
-      run: npm run build
-
     - name: Restart PM2 process
       run: pm2 restart impacting-life-backend
