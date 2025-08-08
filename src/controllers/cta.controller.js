@@ -20,6 +20,26 @@ exports.getCtaById = async (req, res) => {
     }
 };
 
+exports.getCtaByPage = async (req, res) => {
+    try {
+        const pageSlug = req.query.page;
+
+        if (!pageSlug) {
+            return res.status(400).json({ message: 'Missing page parameter' });
+        }
+
+        const item = await ctaModel.findOne({ slug: pageSlug });
+
+        if (!item) {
+            return res.status(404).json({ message: 'CTA not found for this page' });
+        }
+
+        res.json(item);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 exports.createCta = async (req, res) => {
     try {
         let imageUrl = null;
