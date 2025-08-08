@@ -9,7 +9,7 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerSpec = require('./docs/swagger');
 
 const corsOptions = {
-    origin: ["*"],
+    origin: ["http://localhost:3000", "http://localhost:5173", "https://impactinglifeuat.sdssoftltd.co.uk", "https://impactinglife.sdssoftltd.co.uk"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     optionsSuccessStatus: 200,
