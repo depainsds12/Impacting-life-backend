@@ -8,7 +8,8 @@ const faqSchema = new mongoose.Schema({
     answer: {
         type: String,
         required: true
-    }
+    },
+    order: Number
 });
 
 module.exports = mongoose.model('FAQ', faqSchema);
