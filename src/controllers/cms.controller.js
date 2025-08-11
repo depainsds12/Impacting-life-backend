@@ -256,13 +256,22 @@ exports.getFAQ = async (req, res) => {
 
 exports.createFAQ = async (req, res) => {
     try {
-        const faq = new FAQ(req.body);
+        await FAQ.updateMany({}, { $inc: { order: 1 } });
+
+        const faq = new FAQ({
+            ...req.body,
+            order: 1
+        });
+
         await faq.save();
+
         res.status(201).json(faq);
     } catch (error) {
+        console.error("Error creating FAQ:", error);
         res.status(400).json({ message: error.message });
     }
 };
+
 
 exports.updateFAQ = async (req, res) => {
     try {
@@ -548,20 +557,27 @@ exports.getTestimonial = async (req, res) => {
 exports.createTestimonial = async (req, res) => {
     try {
         let imageUrl = null;
+        await Testimonial.updateMany({}, { $inc: { order: 1 } });
+
         if (req.file) {
             const uniqueFileName = `testimonial-${Date.now()}.jpeg`;
             imageUrl = await uploadToAzure(req.file.buffer, uniqueFileName);
         }
+
         const item = new Testimonial({
             ...req.body,
             image: imageUrl,
+            order: 1
         });
+
         await item.save();
         res.status(201).json(item);
     } catch (error) {
+        console.error("Error creating testimonial:", error);
         res.status(400).json({ message: error.message });
     }
 };
+
 
 exports.updateTestimonial = async (req, res) => {
     try {
