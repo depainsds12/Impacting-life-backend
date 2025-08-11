@@ -26,7 +26,8 @@ const testimonialSchema = new mongoose.Schema({
     description: {
         type: String,
         required: true
-    }
+    },
+    order: Number
 });
 
 module.exports = mongoose.model('Testimonial', testimonialSchema);

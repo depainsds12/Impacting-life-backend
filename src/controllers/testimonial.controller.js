@@ -3,7 +3,7 @@ const { uploadToAzure, deleteFromAzure } = require('../utils/azureBlob');
 
 exports.getTestimonialList = async (req, res) => {
   try {
-    const items = await Testimonial.find().sort({ _id: -1 });
+    const items = await Testimonial.find().sort({ order: 1 });
     res.json(items);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
