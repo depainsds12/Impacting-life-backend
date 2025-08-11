@@ -40,11 +40,14 @@ router.delete('/how-it-works/:id', protect, adminMiddleware, cmsController.delet
 router.get('/testimonials', cmsController.getTestimonialList);
 router.get('/testimonials/:id', cmsController.getTestimonial);
 router.post('/testimonials', protect, adminMiddleware, upload.single('image'), cmsController.createTestimonial);
+router.post('/order-testimonials', protect, adminMiddleware, cmsController.updateTestimonialOrder);
 router.put('/testimonials/:id', protect, adminMiddleware, upload.single('image'), cmsController.updateTestimonial);
 router.delete('/testimonials/:id', protect, adminMiddleware, cmsController.deleteTestimonial);
 
 router.get("/announcements", cmsController.getAnnouncements);
-router.post("/announcements",protect, adminMiddleware, cmsController.updateAnnouncement);
-router.delete("/announcements/:id",protect, adminMiddleware, cmsController.deleteAnnouncement);
+router.post("/announcements", protect, adminMiddleware, cmsController.updateAnnouncement);
+
+router.get("/popular-courses", cmsController.getPopularCourses);
+router.post("/popular-courses", protect, adminMiddleware, cmsController.updatePopularCourses);
 
 module.exports = router;

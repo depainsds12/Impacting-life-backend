@@ -9,6 +9,7 @@ const Testimonial = require('../models/testimonial.model');
 const Announcement = require("../models/announcement.model");
 
 const { uploadToAzure, deleteFromAzure } = require('../utils/azureBlob');
+const popularCoursesModel = require('../models/popularCourses.model');
 
 exports.getBanner = async (req, res) => {
     try {
@@ -275,19 +276,17 @@ exports.updateFAQ = async (req, res) => {
 
 exports.updateFAQOrder = async (req, res) => {
     try {
-        // Accept either { orders: [...] } or a raw array [...]. This makes frontend flexible.
         const orders = Array.isArray(req.body) ? req.body : req.body.orders;
 
         if (!Array.isArray(orders) || orders.length === 0) {
             return res.status(400).json({ success: false, message: 'Invalid data format. Expected an array of { _id, order }' });
         }
 
-        // Build bulk operations
         const ops = [];
         orders.forEach((item, index) => {
-            const id = item._id || item.id; // accept either key
-            const order = typeof item.order === 'number' ? item.order : parseInt(item.order); // fallback to index+1
-            if (!id) return; // skip items without id
+            const id = item._id || item.id;
+            const order = typeof item.order === 'number' ? item.order : parseInt(item.order);
+            if (!id) return;
 
             ops.push({
                 updateOne: {
@@ -301,7 +300,6 @@ exports.updateFAQOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: 'No valid items to update' });
         }
 
-        // Execute bulk write
         const result = await FAQ.bulkWrite(ops);
 
         return res.status(200).json({
@@ -588,6 +586,45 @@ exports.updateTestimonial = async (req, res) => {
     }
 };
 
+exports.updateTestimonialOrder = async (req, res) => {
+    try {
+        const orders = Array.isArray(req.body) ? req.body : req.body.orders;
+
+        if (!Array.isArray(orders) || orders.length === 0) {
+            return res.status(400).json({ success: false, message: 'Invalid data format. Expected an array of { _id, order }' });
+        }
+
+        const ops = [];
+        orders.forEach((item, index) => {
+            const id = item._id || item.id;
+            const order = typeof item.order === 'number' ? item.order : parseInt(item.order);
+            if (!id) return;
+
+            ops.push({
+                updateOne: {
+                    filter: { _id: id },
+                    update: { $set: { order } },
+                },
+            });
+        });
+
+        if (ops.length === 0) {
+            return res.status(400).json({ success: false, message: 'No valid items to update' });
+        }
+
+        const result = await Testimonial.bulkWrite(ops);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Testimonial order updated successfully',
+            result,
+        });
+    } catch (error) {
+        console.error('Error updating Testimonial order:', error);
+        return res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    }
+};
+
 exports.deleteTestimonial = async (req, res) => {
     try {
         const item = await Testimonial.findByIdAndDelete(req.params.id);
@@ -607,7 +644,6 @@ exports.deleteTestimonial = async (req, res) => {
     }
 };
 
-// Get all announcements
 exports.getAnnouncements = async (req, res) => {
     try {
         const announcements = await Announcement.findOne();
@@ -633,15 +669,27 @@ exports.updateAnnouncement = async (req, res) => {
     }
 };
 
-// Delete announcement
-exports.deleteAnnouncement = async (req, res) => {
+exports.getPopularCourses = async (req, res) => {
     try {
-        const announcement = await Announcement.findByIdAndDelete(req.params.id);
-        if (!announcement) {
-            return res.status(404).json({ success: false, message: "Announcement not found" });
-        }
-        res.status(200).json({ success: true, message: "Announcement deleted" });
+        const data = await popularCoursesModel.findOne();
+        res.status(200).json({ success: true, data: data });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.updatePopularCourses = async (req, res) => {
+    try {
+        const data = await popularCoursesModel.findOneAndUpdate(
+            {},
+            req.body,
+            {
+                new: true,
+                upsert: true,
+            }
+        );
+        res.status(200).json(data);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 };
