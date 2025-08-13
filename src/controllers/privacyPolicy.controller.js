@@ -1,4 +1,4 @@
-const PrivacyPolicy = require('../models/privacyPolicy.model');
+const PrivacyPolicy = require('../models/cms/privacyPolicy.model');
 
 exports.getPrivacyPolicy = async (req, res) => {
   try {

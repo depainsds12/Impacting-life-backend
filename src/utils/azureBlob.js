@@ -16,7 +16,7 @@ const uploadToAzure = async (buffer, fileName) => {
   return blockBlobClient.url;
 };
 
-const deleteFromAzure = async (fileUrl) => {
+const deleteFromAzure = async (fileUrl, folderPath) => {
   try {
     const blobServiceClient = BlobServiceClient.fromConnectionString(
       process.env.AZURE_STORAGE_CONNECTION_STRING
@@ -27,7 +27,7 @@ const deleteFromAzure = async (fileUrl) => {
 
     // Extract blob name from URL
     const url = new URL(fileUrl);
-    const blobName = decodeURIComponent(url.pathname.split("/").pop());
+    const blobName = decodeURIComponent(folderPath ? folderPath + url.pathname.split("/").pop() : url.pathname.split("/").pop());
 
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     await blockBlobClient.deleteIfExists();

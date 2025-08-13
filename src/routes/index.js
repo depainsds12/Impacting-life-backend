@@ -5,6 +5,7 @@ const privacyPolicyRoutes = require('./privacyPolicy.routes');
 const termsAndConditionsRoutes = require('./termsAndConditions.routes');
 const cmsRoutes = require('./cms.routes');
 const businessRoutes = require('./business.route');
+const courseRoutes = require('./course.routes');
 const { swagger } = require('../docs/swagger-comand');
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.use('/privacy-policy', privacyPolicyRoutes);
 router.use('/terms-and-conditions', termsAndConditionsRoutes);
 router.use('/cms', cmsRoutes);
 router.use('/business', businessRoutes);
+router.use('/course', courseRoutes);
 
 module.exports = router;
 ;

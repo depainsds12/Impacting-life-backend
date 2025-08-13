@@ -1,4 +1,4 @@
-const TermsAndConditions = require('../models/termsAndConditions.model');
+const TermsAndConditions = require('../models/cms/termsAndConditions.model');
 
 exports.getTermsAndConditions = async (req, res) => {
   try {

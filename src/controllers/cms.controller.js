@@ -1,15 +1,15 @@
-const Banner = require('../models/banner.model');
-const ctaModel = require('../models/cta.model');
-const FAQ = require('../models/faq.model');
-const Footer = require('../models/footer.model');
-const HowItWorks = require('../models/howItWorks.model');
-const PrivacyPolicy = require('../models/privacyPolicy.model');
-const TermsAndConditions = require('../models/termsAndConditions.model');
-const Testimonial = require('../models/testimonial.model');
-const Announcement = require("../models/announcement.model");
+const Banner = require('../models/cms/banner.model');
+const ctaModel = require('../models/cms/cta.model');
+const FAQ = require('../models/cms/faq.model');
+const Footer = require('../models/cms/footer.model');
+const HowItWorks = require('../models/cms/howItWorks.model');
+const PrivacyPolicy = require('../models/cms/privacyPolicy.model');
+const TermsAndConditions = require('../models/cms/termsAndConditions.model');
+const Testimonial = require('../models/cms/testimonial.model');
+const Announcement = require("../models/cms/announcement.model");
 
 const { uploadToAzure, deleteFromAzure } = require('../utils/azureBlob');
-const popularCoursesModel = require('../models/popularCourses.model');
+const popularCoursesModel = require('../models/cms/popularCourses.model');
 
 exports.getBanner = async (req, res) => {
     try {
@@ -79,16 +79,12 @@ exports.updateBanner = async (req, res) => {
         let updateData = { ...req.body };
 
         if (req.file) {
-            let fileName;
 
             if (existingItem.image) {
-                const urlParts = existingItem.image.split("/");
-                fileName = urlParts[urlParts.length - 1];
-            } else {
-                fileName = `banner-${Date.now()}.jpeg`;
+                await deleteFromAzure(existingItem.image);
             }
 
-            const imageUrl = await uploadToAzure(req.file.buffer, fileName);
+            const imageUrl = await uploadToAzure(req.file.buffer, `banner-${Date.now()}.jpeg`);
             updateData.image = imageUrl;
         }
 
@@ -191,16 +187,12 @@ exports.updateCta = async (req, res) => {
         let updateData = { ...req.body };
 
         if (req.file) {
-            let fileName;
 
             if (existingItem.image) {
-                const urlParts = existingItem.image.split("/");
-                fileName = urlParts[urlParts.length - 1];
-            } else {
-                fileName = `cta-${Date.now()}.jpeg`;
+                await deleteFromAzure(existingItem.image);
             }
 
-            const imageUrl = await uploadToAzure(req.file.buffer, fileName);
+            const imageUrl = await uploadToAzure(req.file.buffer, `cta-${Date.now()}.jpeg`);
             updateData.image = imageUrl;
         }
 
@@ -417,16 +409,11 @@ exports.updateHowItWorks = async (req, res) => {
         let updateData = { ...req.body };
 
         if (req.file) {
-            let fileName;
-
             if (existingItem.image) {
-                const urlParts = existingItem.image.split("/");
-                fileName = urlParts[urlParts.length - 1];
-            } else {
-                fileName = `howitworks-${Date.now()}.jpeg`;
+                await deleteFromAzure(existingItem.image);
             }
 
-            const imageUrl = await uploadToAzure(req.file.buffer, fileName);
+            const imageUrl = await uploadToAzure(req.file.buffer, `howitworks-${Date.now()}.jpeg`);
             updateData.image = imageUrl;
         }
 
@@ -585,14 +572,10 @@ exports.updateTestimonial = async (req, res) => {
         if (!existingItem) return res.status(404).json({ message: 'Not found' });
         let updateData = { ...req.body };
         if (req.file) {
-            let fileName;
             if (existingItem.image) {
-                const urlParts = existingItem.image.split("/");
-                fileName = urlParts[urlParts.length - 1];
-            } else {
-                fileName = `testimonial-${Date.now()}.jpeg`;
+                await deleteFromAzure(existingItem.image);
             }
-            const imageUrl = await uploadToAzure(req.file.buffer, fileName);
+            const imageUrl = await uploadToAzure(req.file.buffer, `testimonial-${Date.now()}.jpeg`);
             updateData.image = imageUrl;
         }
         const updatedItem = await Testimonial.findByIdAndUpdate(req.params.id, updateData, { new: true });

@@ -18,7 +18,6 @@ const protect = async (req, res, next) => {
 };
 
 const adminMiddleware = (req, res, next) => {
-  console.log("req.user",req.user)
   if (req.user?.role === 'admin') {
     return next();
   }
