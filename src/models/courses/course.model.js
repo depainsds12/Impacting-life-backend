@@ -16,15 +16,11 @@ const CourseSchema = new mongoose.Schema({
   skillLevel: String,
   trainingType: String,
 
-  // includes: [String],
-  
-  /// overview
-  // prerequisites: String, 
-  // benefits: [String],
-  
   formats: [{
     name: { type: mongoose.Schema.Types.ObjectId, ref: "Formats" },
     price: Number,
+    newPrice: Number,
+    vatIncluded: Number,
     duration: String,
     durationHours: Number,
     weeks: String,
@@ -33,11 +29,25 @@ const CourseSchema = new mongoose.Schema({
     whatsIncluded: String,
     description: String,
     whatYouWillLearn: [String],
+    includes: [{ icon: { type: mongoose.Schema.Types.ObjectId, ref: "CourseIncludes" }, description: String }],
+    schedules: [{
+      type: { type: mongoose.Schema.Types.ObjectId, ref: "Formats" },
+      startDate: Date,
+      spaces: String,
+    }],
+    overview: {
+      description: String,
+      targetAudience: [String],
+      prerequisites: [String],
+      benefits: [String]
+    },
+    courseContent: [{
+      moduleTitle: String,
+      moduleDescription: String,
+      preview: String
+    }],
+    relatedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }]
   }],
-
-  // modules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Module" }],
-  // schedules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Schedule" }],
-  // relatedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }]
   isDeleted: Number
 }, { timestamps: true });
 

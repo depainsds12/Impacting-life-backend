@@ -281,6 +281,20 @@ exports.getAllCourses = async (req, res) => {
     }
 };
 
+exports. getAllCoursesDropdown = async (req, res) => {
+    try {
+        const query = { isDeleted: { $ne: 1 } };
+        const result = await Course.find(query).select("_id name");
+
+        res.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.getCourseById = async (req, res) => {
     try {
         const course = await Course.findById(req.params.id)
@@ -384,5 +398,94 @@ exports.deleteCourseInclude = async (req, res) => {
         res.status(200).json({ success: true, message: "Deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+exports.createLearningMethod = async (req, res) => {
+    try {
+        const course = await Course.findById(req.body.course_id);
+        if (!course) {
+            return res.status(404).json({
+                success: false,
+                message: "Course not found"
+            });
+        }
+
+        course.formats = req.body
+        await course.save();
+        res.status(201).json(course);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
+
+exports.getLearningMethodInCourseById = async (req, res) => {
+    try {
+        const course = await Course.findById(req.body.course_id)
+        const format = course.formats?.find(
+            (a) => a?._id.toString() === req.params.id
+        );
+        if (!format) return res.status(404).json({ message: "Course not found" });
+        res.json(format);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.updateLearningMethodInCourse = async (req, res) => {
+    try {
+        const course = await Course.findById(req.body.course_id);
+
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const format = course.formats?.find(
+            (a) => a?._id.toString() === req.params.id
+        );
+
+        if (!format) {
+            return res.status(404).json({ message: "Format not found" });
+        }
+
+        Object.keys(req.body).forEach((key) => {
+            if (key !== "course_id") {
+                format[key] = req.body[key];
+            }
+        });
+
+        await course.save();
+
+        res.status(200).json({
+            message: "Format updated successfully",
+            course,
+        });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
+
+exports.deleteLearningMethodInCourse = async (req, res) => {
+    try {
+        const course = await Course.findById(req.body.course_id);
+
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const formats = course.formats?.filter(
+            (a) => a?._id.toString() != req.params.id
+        );
+
+        course.formats = formats
+
+        await course.save();
+
+        res.status(200).json({
+            message: "Format deleted successfully",
+            course,
+        });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 };

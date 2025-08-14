@@ -25,6 +25,7 @@ router.post("/create", protect, adminMiddleware, upload.fields([
     { name: 'detailsImage', maxCount: 1 }
 ]), courseController.createCourse);
 router.get("/list", courseController.getAllCourses);
+router.get("/dropdown", courseController.getAllCoursesDropdown);
 router.get("/view/:id", courseController.getCourseById);
 router.put("/update/:id", protect, adminMiddleware, upload.fields([
     { name: 'image', maxCount: 1 },
@@ -37,4 +38,8 @@ router.post("/includes", protect, adminMiddleware, upload.single("icon"), course
 router.put("/includes/:id", protect, adminMiddleware, upload.single("icon"), courseController.updateCourseInclude);
 router.delete("/includes/:id", protect, adminMiddleware, courseController.deleteCourseInclude);
 
+router.post("/learning-method", protect, adminMiddleware, courseController.createLearningMethod);
+router.post("/learning-method/:id", protect, adminMiddleware, courseController.getLearningMethodInCourseById);
+router.post("/learning-method-delete/:id", protect, adminMiddleware, courseController.deleteLearningMethodInCourse);
+router.put("/learning-method/:id", protect, adminMiddleware, courseController.updateLearningMethodInCourse);
 module.exports = router;
